@@ -47,7 +47,7 @@ jobs:
           fi
       # Install Node.js dependencies WITHOUT triggering build
       - name: Install Node.js dependencies
-        run: npm ci --ignore-scripts
+        run: npm install --ignore-scripts
 
       # FIXED: Run build explicitly after dependencies are ready
       - name: Build diarization system
