@@ -120,13 +120,22 @@ if(APPLE)
         endif()
     endif()
 elseif(WIN32)
-    # Windows: Look for vcpkg jsoncpp
-    find_package(jsoncpp CONFIG)
+    # Windows: Try vcpkg first, fallback to simple JSON implementation
+    find_package(jsoncpp CONFIG QUIET)
     if(jsoncpp_FOUND)
         set(JSONCPP_LIBRARIES jsoncpp_lib)
         message(STATUS "✅ Found jsoncpp via vcpkg")
     else()
-        message(FATAL_ERROR "❌ jsoncpp not found. Please install via vcpkg: vcpkg install jsoncpp")
+        # FIXED: Windows fallback - use simple JSON implementation
+        message(STATUS "⚠️ jsoncpp not found via vcpkg, using simple JSON fallback")
+        set(JSONCPP_LIBRARIES "")
+        set(JSONCPP_INCLUDE_DIRS "")
+        
+        # Add compile definition to enable fallback JSON implementation
+        add_compile_definitions(NO_JSONCPP)
+        
+        message(STATUS "✅ Using fallback JSON implementation for Windows")
+        message(STATUS "💡 For better JSON support, install via: vcpkg install jsoncpp:x64-windows")
     endif()
 else()
     # Linux: Use pkg-config
@@ -217,10 +226,15 @@ if(APPLE)
     
 elseif(WIN32)
     # Windows linking
-    target_link_libraries(diarize-cli 
-        ${ONNXRUNTIME_LIB}
-        ${JSONCPP_LIBRARIES}
-    )
+    target_link_libraries(diarize-cli ${ONNXRUNTIME_LIB})
+    
+    # Only link jsoncpp if it's available
+    if(JSONCPP_LIBRARIES)
+        target_link_libraries(diarize-cli ${JSONCPP_LIBRARIES})
+        message(STATUS "✅ Linked jsoncpp: ${JSONCPP_LIBRARIES}")
+    else()
+        message(STATUS "ℹ️ Using fallback JSON implementation (no jsoncpp linking)")
+    endif()
     
     target_compile_definitions(diarize-cli PRIVATE 
         _WIN32_WINNT=0x0A00

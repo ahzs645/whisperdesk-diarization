@@ -1,4 +1,4 @@
-// src/native/diarization/utils.cpp - FIXED: Namespace conflict resolved
+// src/native/diarization/utils.cpp - FIXED: Namespace conflict resolved + Windows fallback
 #include "utils.h"
 #include "diarize-cli.h"
 #include <iostream>
@@ -8,7 +8,118 @@
 #include <cmath>
 #include <iomanip>    // ← FIXED: Added for std::setprecision, std::setfill, etc.
 #include <chrono>
-#include <json/json.h>
+
+// FIXED: Conditional JSON library inclusion with Windows fallback
+#ifdef NO_JSONCPP
+    // Simple JSON fallback implementation for Windows
+    #include <map>
+    #include <vector>
+    #include <string>
+    namespace Json {
+        struct Value {
+            std::string str_val;
+            std::map<std::string, Value> obj_val;
+            std::vector<Value> arr_val;
+            int int_val = 0;
+            float float_val = 0.0f;
+            bool bool_val = false;
+            enum Type { STRING, OBJECT, ARRAY, INT, FLOAT, BOOL } type = STRING;
+            
+            Value() = default;
+            Value(const std::string& s) : str_val(s), type(STRING) {}
+            Value(const char* s) : str_val(s), type(STRING) {}
+            Value(int i) : int_val(i), type(INT) {}
+            Value(float f) : float_val(f), type(FLOAT) {}
+            Value(bool b) : bool_val(b), type(BOOL) {}
+            
+            // Assignment operators
+            Value& operator=(const std::string& s) { str_val = s; type = STRING; return *this; }
+            Value& operator=(const char* s) { str_val = s; type = STRING; return *this; }
+            Value& operator=(int i) { int_val = i; type = INT; return *this; }
+            Value& operator=(float f) { float_val = f; type = FLOAT; return *this; }
+            Value& operator=(bool b) { bool_val = b; type = BOOL; return *this; }
+            
+            // Object access
+            Value& operator[](const std::string& key) {
+                if (type != OBJECT) {
+                    type = OBJECT;
+                    obj_val.clear();
+                }
+                return obj_val[key];
+            }
+            
+            // Array operations
+            void append(const Value& v) {
+                if (type != ARRAY) {
+                    type = ARRAY;
+                    arr_val.clear();
+                }
+                arr_val.push_back(v);
+            }
+            
+            // Size for arrays
+            size_t size() const {
+                return type == ARRAY ? arr_val.size() : 0;
+            }
+        };
+        
+        // JSON serialization
+        std::ostream& operator<<(std::ostream& os, const Value& v) {
+            switch(v.type) {
+                case Value::STRING: 
+                    os << "\"";
+                    // Escape quotes in string
+                    for (char c : v.str_val) {
+                        if (c == '"') os << "\\\"";
+                        else if (c == '\\') os << "\\\\";
+                        else if (c == '\n') os << "\\n";
+                        else if (c == '\r') os << "\\r";
+                        else if (c == '\t') os << "\\t";
+                        else os << c;
+                    }
+                    os << "\"";
+                    return os;
+                case Value::INT: return os << v.int_val;
+                case Value::FLOAT: return os << std::fixed << std::setprecision(6) << v.float_val;
+                case Value::BOOL: return os << (v.bool_val ? "true" : "false");
+                case Value::OBJECT: {
+                    os << "{";
+                    bool first = true;
+                    for(const auto& [k, val] : v.obj_val) {
+                        if(!first) os << ",";
+                        os << "\"" << k << "\":" << val;
+                        first = false;
+                    }
+                    return os << "}";
+                }
+                case Value::ARRAY: {
+                    os << "[";
+                    for(size_t i = 0; i < v.arr_val.size(); i++) {
+                        if(i > 0) os << ",";
+                        os << v.arr_val[i];
+                    }
+                    return os << "]";
+                }
+            }
+            return os;
+        }
+        
+        // Factory functions
+        Value arrayValue() { 
+            Value v; 
+            v.type = Value::ARRAY; 
+            return v; 
+        }
+        
+        Value objectValue() { 
+            Value v; 
+            v.type = Value::OBJECT; 
+            return v; 
+        }
+    }
+#else
+    #include <json/json.h>
+#endif
 
 #ifdef USE_LIBSNDFILE
 #include <sndfile.h>
@@ -122,7 +233,7 @@ namespace Json {
 void output_results(const std::vector<AudioSegment>& segments, const DiarizeOptions& options) {
     // FIXED: Use fully qualified names to avoid namespace conflict
     ::Json::Value root;
-    ::Json::Value segments_json(::Json::arrayValue);
+    ::Json::Value segments_json(::Json::arrayValue());
     
     auto speaker_stats = generate_speaker_stats(segments);
     
@@ -156,7 +267,7 @@ void output_results(const std::vector<AudioSegment>& segments, const DiarizeOpti
     root["model_info"] = model_info;
     
     // Add speaker statistics
-    ::Json::Value speakers_json(::Json::arrayValue);
+    ::Json::Value speakers_json(::Json::arrayValue());
     for (const auto& [speaker_id, stats] : speaker_stats) {
         ::Json::Value speaker;
         speaker["speaker_id"] = speaker_id;
