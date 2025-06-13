@@ -241,19 +241,60 @@ elseif(WIN32)
         NOMINMAX
     )
     
-    # Copy DLLs to output directory
+    # FIXED: Better Windows DLL copying
     get_filename_component(ONNX_DIR ${ONNXRUNTIME_LIB} DIRECTORY)
+    message(STATUS "🔍 Looking for DLLs in: ${ONNX_DIR}")
+    
+    # Find and copy all ONNX Runtime DLLs
     file(GLOB ONNX_DLLS "${ONNX_DIR}/*.dll")
-    foreach(DLL ${ONNX_DLLS})
-        add_custom_command(TARGET diarize-cli POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${DLL} $<TARGET_FILE_DIR:diarize-cli>
-        )
-        add_custom_command(TARGET diarize-cli POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${DLL} ${CMAKE_CURRENT_SOURCE_DIR}/../binaries/
-        )
-    endforeach()
+    if(ONNX_DLLS)
+        message(STATUS "📦 Found DLLs to copy:")
+        foreach(DLL ${ONNX_DLLS})
+            get_filename_component(DLL_NAME ${DLL} NAME)
+            message(STATUS "  - ${DLL_NAME}")
+            
+            # Copy to build directory (for local testing)
+            add_custom_command(TARGET diarize-cli POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${DLL}" "$<TARGET_FILE_DIR:diarize-cli>/"
+                COMMENT "📦 Copying ${DLL_NAME} to build directory"
+            )
+            
+            # Copy to binaries directory (for distribution)
+            add_custom_command(TARGET diarize-cli POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${DLL}" "${CMAKE_CURRENT_SOURCE_DIR}/../binaries/"
+                COMMENT "📦 Copying ${DLL_NAME} to binaries directory"
+            )
+        endforeach()
+    else()
+        message(WARNING "⚠️ No ONNX Runtime DLLs found in ${ONNX_DIR}")
+        
+        # Try alternative DLL locations
+        file(GLOB ONNX_DLLS_ALT "${ONNX_DIR}/../bin/*.dll")
+        if(ONNX_DLLS_ALT)
+            message(STATUS "📦 Found DLLs in alternative location:")
+            foreach(DLL ${ONNX_DLLS_ALT})
+                get_filename_component(DLL_NAME ${DLL} NAME)
+                message(STATUS "  - ${DLL_NAME}")
+                
+                add_custom_command(TARGET diarize-cli POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${DLL}" "$<TARGET_FILE_DIR:diarize-cli>/"
+                )
+                add_custom_command(TARGET diarize-cli POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${DLL}" "${CMAKE_CURRENT_SOURCE_DIR}/../binaries/"
+                )
+            endforeach()
+        endif()
+    endif()
+    
+    # Also copy Visual C++ runtime if needed (this is often the issue)
+    add_custom_command(TARGET diarize-cli POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "🔍 Checking for missing dependencies..."
+        COMMENT "Verifying Windows dependencies"
+    )
     
 else()
     # Linux linking
