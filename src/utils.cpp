@@ -1,6 +1,6 @@
 // src/native/diarization/utils.cpp - FIXED: Namespace conflict resolved
-#include "include/utils.h"
-#include "include/diarize-cli.h"
+#include "utils.h"
+#include "diarize-cli.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>

@@ -1,6 +1,6 @@
 // src/native/diarization/speaker-segmenter.cpp - FIXED for Windows ONNX Runtime
-#include "include/speaker-segmenter.h"
-#include "include/utils.h"
+#include "speaker-segmenter.h"
+#include "utils.h"
 #include <iostream>
 #include <iomanip>
 #include <algorithm>

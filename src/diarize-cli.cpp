@@ -1,8 +1,8 @@
 // src/native/diarization/diarize-cli.cpp - FIXED for better speaker detection
-#include "include/diarize-cli.h"
-#include "include/speaker-segmenter.h"
-#include "include/speaker-embedder.h"
-#include "include/utils.h"
+#include "diarize-cli.h"
+#include "speaker-segmenter.h"
+#include "speaker-embedder.h"
+#include "utils.h"
 
 #include <iostream>
 #include <iomanip>

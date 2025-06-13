@@ -1,6 +1,6 @@
 // src/native/diarization/speaker-embedder.cpp - FIXED for Windows ONNX Runtime
-#include "include/speaker-embedder.h"
-#include "include/utils.h"
+#include "speaker-embedder.h"
+#include "utils.h"
 #include <iostream>
 #include <algorithm>
 #include <cmath>
