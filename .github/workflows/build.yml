@@ -45,8 +45,7 @@ jobs:
             echo "VCPKG_ROOT=$PWD/vcpkg" >> $GITHUB_ENV
             echo "CMAKE_TOOLCHAIN_FILE=$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
           fi
-
-      # FIXED: Install Node.js dependencies WITHOUT triggering build
+      # Install Node.js dependencies WITHOUT triggering build
       - name: Install Node.js dependencies
         run: npm ci --ignore-scripts
 
