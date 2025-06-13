@@ -233,7 +233,7 @@ namespace Json {
 void output_results(const std::vector<AudioSegment>& segments, const DiarizeOptions& options) {
     // FIXED: Use fully qualified names to avoid namespace conflict
     ::Json::Value root;
-    ::Json::Value segments_json(::Json::arrayValue());
+    ::Json::Value segments_json(::Json::arrayValue);
     
     auto speaker_stats = generate_speaker_stats(segments);
     
@@ -267,7 +267,7 @@ void output_results(const std::vector<AudioSegment>& segments, const DiarizeOpti
     root["model_info"] = model_info;
     
     // Add speaker statistics
-    ::Json::Value speakers_json(::Json::arrayValue());
+    ::Json::Value speakers_json(::Json::arrayValue);
     for (const auto& [speaker_id, stats] : speaker_stats) {
         ::Json::Value speaker;
         speaker["speaker_id"] = speaker_id;
