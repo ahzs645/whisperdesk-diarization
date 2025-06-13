@@ -1,0 +1,20 @@
+{
+  "name": "whisperdesk-diarization",
+  "version": "1.0.0",
+  "description": "Advanced Multi-Speaker Diarization Engine",
+  "main": "index.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "debug": "node scripts/debug.js",
+    "clean": "node scripts/build.js --clean",
+    "test": "node scripts/test.js",
+    "models": "node scripts/build.js --models-only"
+  },
+  "keywords": ["diarization", "speech", "speaker", "AI", "ONNX"],
+  "author": "WhisperDesk Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/whisperdesk/whisperdesk-diarization.git"
+  }
+}
