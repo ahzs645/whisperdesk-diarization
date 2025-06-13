@@ -29,7 +29,8 @@ jobs:
           node-version: '20'
 
       # FIXED: Install platform dependencies BEFORE npm install
-      - name: Install platform dependencies
+      - name: Install platform dependencies (Linux/macOS)
+        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
@@ -37,15 +38,34 @@ jobs:
             sudo apt-get install -y cmake libjsoncpp-dev pkg-config
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             brew install cmake jsoncpp
-          elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            # Install vcpkg and jsoncpp for Windows
-            git clone https://github.com/Microsoft/vcpkg.git
-            ./vcpkg/bootstrap-vcpkg.sh
-            ./vcpkg/vcpkg install jsoncpp:x64-windows
-            echo "VCPKG_ROOT=$PWD/vcpkg" >> $GITHUB_ENV
-            echo "CMAKE_TOOLCHAIN_FILE=$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
           fi
-      # Install Node.js dependencies WITHOUT triggering build
+
+      # FIXED: Separate Windows setup with proper vcpkg installation
+      - name: Install platform dependencies (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: powershell
+        run: |
+          # Install vcpkg
+          git clone https://github.com/Microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg.exe install jsoncpp:x64-windows
+          
+          # Set environment variables for subsequent steps
+          $vcpkgRoot = "$env:GITHUB_WORKSPACE\vcpkg"
+          $toolchainFile = "$vcpkgRoot\scripts\buildsystems\vcpkg.cmake"
+          
+          echo "VCPKG_ROOT=$vcpkgRoot" >> $env:GITHUB_ENV
+          echo "CMAKE_TOOLCHAIN_FILE=$toolchainFile" >> $env:GITHUB_ENV
+          
+          # Verify installation
+          if (Test-Path $toolchainFile) {
+            Write-Host "✅ vcpkg toolchain file found: $toolchainFile"
+          } else {
+            Write-Host "❌ vcpkg toolchain file not found: $toolchainFile"
+            exit 1
+          }
+
+      # FIXED: Install Node.js dependencies WITHOUT triggering build
       - name: Install Node.js dependencies
         run: npm install --ignore-scripts
 

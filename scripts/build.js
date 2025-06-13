@@ -256,8 +256,13 @@ module.exports = {
 
 // Run if called directly
 if (require.main === module) {
-  buildEnhancedDiarization().catch(error => {
-    console.error('❌ Enhanced build failed:', error);
-    process.exit(1);
-  });
+  buildEnhancedDiarization()
+    .then(() => {
+      process.exit(0);
+    })
+    .catch(error => {
+      console.error('❌ Enhanced build failed:', error);
+      process.exit(1);
+    });
 }
+
