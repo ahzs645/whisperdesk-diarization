@@ -74,12 +74,12 @@ class BuildConfig {
     this.arch = process.arch;
     this.projectRoot = path.resolve(__dirname, '../..');
     
-    // Directory structure
-    this.tempDir = path.join(this.projectRoot, 'temp', 'diarization-build');
+    // Standard project directory structure
+    this.tempDir = path.join(this.projectRoot, 'temp');
     this.binariesDir = path.join(this.projectRoot, 'binaries');
     this.modelsDir = path.join(this.projectRoot, 'models');
     this.nativeDir = path.join(this.projectRoot, 'native');
-    this.sourceDir = path.join(this.nativeDir, 'src');
+    this.sourceDir = path.join(this.projectRoot, 'src');
   }
 
   getExecutableName() {

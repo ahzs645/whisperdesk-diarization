@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "node scripts/build.js",
-    "debug": "node scripts/debug.js",
+    "debug": "node scripts/debug.js", 
     "clean": "node scripts/build.js --clean",
     "test": "node scripts/test.js",
-    "models": "node scripts/build.js --models-only"
+    "models": "node scripts/build.js --models-only",
+    "install": "node scripts/build.js"
   },
   "keywords": ["diarization", "speech", "speaker", "AI", "ONNX"],
   "author": "WhisperDesk Team",
@@ -16,5 +17,11 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/whisperdesk/whisperdesk-diarization.git"
+  },
+  "devDependencies": {
+    "tar": "^6.1.15"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }

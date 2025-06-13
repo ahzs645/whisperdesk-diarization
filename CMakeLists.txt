@@ -179,7 +179,7 @@ if(APPLE)
         add_custom_command(TARGET diarize-cli POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${ONNX_PROVIDERS_SHARED} 
-            ${CMAKE_CURRENT_SOURCE_DIR}/../../../binaries/
+            ${CMAKE_CURRENT_SOURCE_DIR}/../binaries/
             COMMENT "📦 Copying providers_shared to binaries directory"
         )
     else()
@@ -211,7 +211,7 @@ if(APPLE)
     add_custom_command(TARGET diarize-cli POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${ONNXRUNTIME_LIB} 
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../binaries/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../binaries/
         COMMENT "📦 Copying ONNX Runtime to binaries directory"
     )
     
@@ -237,7 +237,7 @@ elseif(WIN32)
         )
         add_custom_command(TARGET diarize-cli POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${DLL} ${CMAKE_CURRENT_SOURCE_DIR}/../../../binaries/
+            ${DLL} ${CMAKE_CURRENT_SOURCE_DIR}/../binaries/
         )
     endforeach()
     
@@ -259,7 +259,7 @@ else()
     foreach(SO ${ONNX_SOS})
         add_custom_command(TARGET diarize-cli POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${SO} ${CMAKE_CURRENT_SOURCE_DIR}/../../../binaries/
+            ${SO} ${CMAKE_CURRENT_SOURCE_DIR}/../binaries/
         )
     endforeach()
 endif()
@@ -268,7 +268,7 @@ endif()
 add_custom_command(TARGET diarize-cli POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy 
     $<TARGET_FILE:diarize-cli> 
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../binaries/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../binaries/
     COMMENT "📦 Copying diarize-cli to binaries directory"
 )
 
@@ -276,7 +276,7 @@ add_custom_command(TARGET diarize-cli POST_BUILD
 if(APPLE)
     add_custom_command(TARGET diarize-cli POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "🔍 Verifying macOS diarization binary..."
-        COMMAND otool -L ${CMAKE_CURRENT_SOURCE_DIR}/../../../binaries/diarize-cli || true
+        COMMAND otool -L ${CMAKE_CURRENT_SOURCE_DIR}/../binaries/diarize-cli || true
         COMMENT "🔍 Checking library dependencies on macOS"
     )
 endif()
@@ -294,6 +294,6 @@ if(APPLE)
     message(STATUS "ONNX Providers: ${ONNX_PROVIDERS_SHARED}")
 endif()
 message(STATUS "jsoncpp: ${JSONCPP_LIBRARIES}")
-message(STATUS "Output: ${CMAKE_CURRENT_SOURCE_DIR}/../../../binaries/diarize-cli")
+message(STATUS "Output: ${CMAKE_CURRENT_SOURCE_DIR}/../binaries/diarize-cli")
 message(STATUS "══════════════════════════════════════")
 message(STATUS "")

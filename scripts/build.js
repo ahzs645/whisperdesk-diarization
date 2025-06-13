@@ -12,9 +12,6 @@ class EnhancedDiarizationBuilder {
   constructor() {
     this.config = new BuildConfig();
     
-    // FIXED: Override source directory to use the real implementation
-    this.config.sourceDir = path.join(this.config.projectRoot, 'src', 'native', 'diarization');
-    
     this.prerequisitesChecker = new PrerequisitesChecker(this.config);
     this.templateGenerator = new TemplateGenerator(this.config);
     this.onnxManager = new ONNXRuntimeManager(this.config);

@@ -1,0 +1,60 @@
+# Build outputs
+build/
+binaries/
+dist/
+*.exe
+*.dll
+*.dylib
+*.so
+*.so.*
+
+# ONNX Runtime downloads
+temp/
+native/
+onnxruntime*/
+
+# Models (large files)
+models/*.onnx
+models/*.bin
+*.onnx
+*.bin
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
